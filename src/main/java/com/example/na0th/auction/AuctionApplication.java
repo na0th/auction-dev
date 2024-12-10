@@ -4,7 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
-@EnableJpaAuditing
+//@EnableJpaAuditing WebMvc 테스트를 의존성을 따로 처리하가 위해서..
 @SpringBootApplication
 public class AuctionApplication {
 
