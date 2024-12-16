@@ -32,23 +32,19 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public ProductResponse create(ProductRequest.Create request, List<MultipartFile> images) {
         //image 업로드 안 하는 경우에는 NPE??
-        List<String> imageUrls = uploadImages(images);
-
-        List<ProductImage> productImages = imageUrls.stream()
-                .map(ProductImage::create)
-                .toList();
-
-        List<ProductImage> newProductImages = productImageRepository.saveAll(productImages);
-
         Product product = Product.create(
                 request.getName(),
                 request.getDescription(),
-                ProductCategory.valueOf(request.getProductCategory()),
-                newProductImages
+                ProductCategory.valueOf(request.getProductCategory())
         );
-
         Product newProduct = productRepository.save(product);
 
+        List<String> imageUrls = uploadImages(images);
+        List<ProductImage> productImages = imageUrls.stream()
+                .map(imageUrl -> ProductImage.create(imageUrl, product))
+                .toList();
+        //saveAll해도 persist마다 쿼리 1개씩 날라가서 의미는 없다..
+        List<ProductImage> newProductImages = productImageRepository.saveAll(productImages);
 
         return ProductResponse.of(newProduct);
     }
@@ -75,7 +71,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     public void delete(Long productId) {
-    Product foundProduct = productRepository.findById(productId)
+        Product foundProduct = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found" + productId));
 
         productRepository.deleteById(productId);

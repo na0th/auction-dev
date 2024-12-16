@@ -1,13 +1,13 @@
 package com.example.na0th.auction.domain.product.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Builder
@@ -24,16 +24,15 @@ public class Product {
 
 //    private Auction auction;
 
-    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true)
-    @JoinColumn(name = "product_id")//자식 테이블에 외래 키
-    private List<ProductImage> productImages = new ArrayList<>();
+//    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true)
+//    @JoinColumn(name = "product_id")//자식 테이블에 외래 키
+//    private List<ProductImage> productImages = new ArrayList<>();
 
-    public static Product create(String name, String description, ProductCategory productCategory, List<ProductImage> productImages) {
+    public static Product create(String name, String description, ProductCategory productCategory) {
         return Product.builder()
                 .name(name)
                 .description(description)
                 .productCategory(productCategory)
-                .productImages(productImages)
                 .build();
     }
 
