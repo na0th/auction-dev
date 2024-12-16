@@ -20,6 +20,9 @@ jobs:
       - name : Checkout code
         uses: actions/checkout@v4
 
+      - name: Grant execute permission for Gradle Wrapper
+        run: chmod +x ./gradlew
+
       - name: Cache Gradle dependencies
         uses: actions/cache@v3
         with:
@@ -35,10 +38,6 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
-
-
-      - name: Grant execute permission for Gradle Wrapper
-        run: chmod +x ./gradlew
 
       - name: Build with Gradle
         run: ./gradlew build
