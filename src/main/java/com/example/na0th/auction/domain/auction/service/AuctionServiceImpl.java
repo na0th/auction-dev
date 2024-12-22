@@ -9,12 +9,22 @@ import com.example.na0th.auction.domain.auction.model.AuctionStatus;
 import com.example.na0th.auction.domain.auction.repository.AuctionRepository;
 import com.example.na0th.auction.domain.product.exception.ProductNotFoundException;
 import com.example.na0th.auction.domain.product.model.Product;
+import com.example.na0th.auction.domain.product.model.ProductImage;
+import com.example.na0th.auction.domain.product.repository.ProductImageRepository;
 import com.example.na0th.auction.domain.product.repository.ProductRepository;
 import com.example.na0th.auction.domain.user.exception.UserNotFoundException;
 import com.example.na0th.auction.domain.user.model.User;
 import com.example.na0th.auction.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +33,7 @@ public class AuctionServiceImpl implements AuctionService {
     private final AuctionRepository auctionRepository;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
+    private final ProductImageRepository productImageRepository;
 
     @Override
     public AuctionResponse create(Long userId, AuctionRequest.Create request) {
@@ -88,5 +99,37 @@ public class AuctionServiceImpl implements AuctionService {
          * BID가 없을 때 삭제 가능?
          * 아니면 삭제 자체가 불가능?
          */
+    }
+
+    @Override
+    public Page<AuctionResponse.Details> getAuctionsByFilter(Pageable pageable, AuctionRequest.SearchCondition condition) {
+        /**
+         TODO : ProductImage -> Product만 참조 가능한 단방향 매핑임.
+          따라서 Product를 조회해도 ProductImage를 참조할 수 없기 때문에
+          쿼리를 따로 날려 ProductImage만 조회해 온 후 DTO에 추가해야 함.
+          1. Auction 조회 / 2. ProductImage 조회/ 3. DTO에 Auction, ProductImage 채우기
+         */
+
+        // 1. Fetch Join으로 연관 엔티티까지 프록시 초기화 시켜서 조회
+        Page<Auction> auctions = auctionRepository.getAuctions(pageable, condition);
+        // 2. Product ID 전부 가져옴
+        List<Long> productIds = auctions.stream()
+                .map(auction -> auction.getProduct().getId())
+                .distinct()
+                .toList();
+        // 3. Product ID로 Product Image 를 batch 조회
+        List<ProductImage> productImages = productImageRepository.findAllByProductIds(productIds);
+
+        // 4. ProductImage 들을 각각 Product ID로 그룹화
+        Map<Long, List<String>> productImageMap = productImages.stream()
+                .collect(Collectors.groupingBy(
+                        productImage -> productImage.getProduct().getId(),
+                        Collectors.mapping(ProductImage::getImageUrl, Collectors.toList())
+                ));
+        // 5. ProductImageUrls 를 각 Auction DTO 에 넣어줌
+        return auctions.map(
+                auction ->
+                        AuctionResponse.Details.of(auction, productImageMap.getOrDefault(auction.getProduct().getId(), Collections.emptyList()))
+        );
     }
 }

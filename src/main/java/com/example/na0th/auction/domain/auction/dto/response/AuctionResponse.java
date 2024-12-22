@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 @Builder
@@ -58,10 +59,24 @@ public class AuctionResponse {
         private Long productId;
         private String productCategory;
         private String description;
+        //productImage
         private List<String> productImageUrls;
 
-        public static AuctionResponse.Details of(Auction auction) {
-            return AuctionResponse.Details.builder()
+        public static AuctionResponse.Details of(Auction auction, List<String> imageUrls ) {
+            //nullable 필드들은 null 체크가 필요하다.
+            return Details.builder()
+                    .auctionId(auction.getId())
+                    .startTime(auction.getAuctionTime().getStartTime())
+                    .endTime(auction.getAuctionTime().getEndTime())
+                    .auctionCategory(auction.getAuctionCategory().name())
+                    .auctionStatus(auction.getAuctionStatus().name())
+                    .startingBid(auction.getStartingBid())
+                    .sellerId(auction.getSeller().getId())
+                    .sellerNickName(auction.getSeller().getNickName())
+                    .productId(auction.getProduct().getId())
+                    .productCategory(auction.getProduct().getProductCategory().name())
+                    .description(auction.getProduct().getDescription())
+                    .productImageUrls(imageUrls != null ? imageUrls : Collections.emptyList())
                     .build();
         }
 

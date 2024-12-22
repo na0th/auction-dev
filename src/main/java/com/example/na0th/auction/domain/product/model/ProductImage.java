@@ -3,12 +3,14 @@ package com.example.na0th.auction.domain.product.model;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Getter
 public class ProductImage {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

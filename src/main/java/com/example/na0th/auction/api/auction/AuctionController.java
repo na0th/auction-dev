@@ -6,8 +6,12 @@ import com.example.na0th.auction.domain.auction.dto.request.AuctionRequest;
 import com.example.na0th.auction.domain.auction.dto.response.AuctionResponse;
 import com.example.na0th.auction.domain.auction.service.AuctionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.example.na0th.auction.common.constant.ApiResponseMessages.*;
 
@@ -18,9 +22,9 @@ public class AuctionController {
     private final AuctionService auctionService;
 
     /**
-    post에서 RequestParam으로 쿼리 스트링으로 userId를 보내는 것이 어색하지만,
-    추후에 jwt에서 userId를 추출할 것이기에 분리해둔 것..
-    */
+     * post에서 RequestParam으로 쿼리 스트링으로 userId를 보내는 것이 어색하지만,
+     * 추후에 jwt에서 userId를 추출할 것이기에 분리해둔 것..
+     */
     @PostMapping
     public ResponseEntity<ApiResult<AuctionResponse>> create(@RequestParam Long userId, @RequestBody AuctionRequest.Create create) {
         AuctionResponse createdAuction = auctionService.create(userId, create);
@@ -31,6 +35,12 @@ public class AuctionController {
     public ResponseEntity<ApiResult<AuctionResponse>> get(@PathVariable Long auctionId) {
         AuctionResponse foundAuction = auctionService.getById(auctionId);
         return ResponseEntity.ok(ApiResult.success(AUCTION_RETRIEVED_SUCCESS, foundAuction));
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResult<Page<AuctionResponse.Details>>> getAllPaged(Pageable pageable, AuctionRequest.SearchCondition condition) {
+        Page<AuctionResponse.Details> foundAuctions = auctionService.getAuctionsByFilter(pageable, condition);
+        return ResponseEntity.ok(ApiResult.success(AUCTION_RETRIEVED_SUCCESS, foundAuctions));
     }
 
     @PutMapping("/{auctionId}")

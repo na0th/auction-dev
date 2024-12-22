@@ -2,6 +2,7 @@ package com.example.na0th.auction.domain.auction.dto.request;
 
 import com.example.na0th.auction.domain.auction.model.AuctionCategory;
 import com.example.na0th.auction.domain.auction.model.AuctionStatus;
+import com.example.na0th.auction.domain.product.model.ProductCategory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,5 +35,20 @@ public class AuctionRequest {
         private String auctionCategory;
         private String auctionStatus;
         private BigDecimal startingBid;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class SearchCondition {
+        private AuctionCategory auctionCategory;
+        private ProductCategory productCategory;
+        private LocalDateTime startTime;
+        private LocalDateTime endTime;
+        private BigDecimal minPrice;
+        private BigDecimal maxPrice;
+        private AuctionStatus auctionStatus;
+        private String sortBy;
     }
 }
