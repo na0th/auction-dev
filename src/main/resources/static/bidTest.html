@@ -1,0 +1,53 @@
+!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STOMP Concurrent Test</title>
+    <script src="/webjars/sockjs-client/1.5.1/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/2.3.4/stomp.min.js"></script>
+</head>
+<body>
+    <h1>STOMP Concurrent Test</h1>
+    <p>Check the console for test results.</p>
+
+    <script>
+        // 클라이언트 수와 메시지 반복 횟수
+        const CLIENT_COUNT = 20; // 동시 실행 클라이언트 수
+        const MESSAGE_REPEAT = 1; // 각 클라이언트당 메시지 전송 횟수
+
+        // WebSocket과 STOMP 클라이언트 설정
+        function createClient(clientId) {
+            const socket = new SockJS('/ws'); // WebSocket 서버 주소
+            const stompClient = Stomp.over(socket);
+
+            stompClient.connect({}, () => {
+                console.log(`Client ${clientId} connected.`);
+
+                // 반복 메시지 전송
+                for (let i = 0; i < MESSAGE_REPEAT; i++) {
+                    stompClient.send('/app/bid', {}, JSON.stringify({
+                        auctionId: 1,
+                        bidAmount: 101 + clientId * 10 + i,
+                        bidderNickName: `Bidder${clientId}`
+                    }));
+                }
+
+                // 연결 종료
+                setTimeout(() => stompClient.disconnect(() => {
+                    console.log(`Client ${clientId} disconnected.`);
+                }), 2000); // 2초 후 종료
+            });
+
+            stompClient.onStompError = (frame) => {
+                console.error(`Client ${clientId} error:`, frame);
+            };
+        }
+
+        // 클라이언트 생성 및 실행
+        for (let i = 0; i < CLIENT_COUNT; i++) {
+            createClient(i);
+        }
+    </script>
+</body>
+</html>
