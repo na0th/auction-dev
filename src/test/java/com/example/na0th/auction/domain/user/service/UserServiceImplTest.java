@@ -19,8 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -76,7 +75,7 @@ class UserServiceImplTest {
         }
 
         @Test
-        void 유저조회_시_없는_id면_예외가_발생한다() {
+        void 유저를_조회할_때_없는_ID면_예외가_발생한다() {
             // given
             when(userRepository.findById(1L)).thenReturn(Optional.empty());
             // when & then
@@ -117,6 +116,6 @@ class UserServiceImplTest {
         //when
         userService.delete(1L);
         //then
-        verify(userRepository).deleteById(eq(1L));
+        verify(userRepository,times(1)).deleteById(1L);
     }
 }

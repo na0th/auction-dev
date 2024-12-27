@@ -43,23 +43,27 @@ class UserControllerTest {
 
     }
 
-    @Test
-    void 유저를_등록한다() throws Exception {
-        // given
-        UserRequest.Create request = new UserRequest.Create("username", "email", "password", "nickname");
-        UserResponse createdUser = new UserResponse(1L, "nickname", "username", "email");
+    @Nested
+    class 등록 {
+        @Test
+        void 유저를_등록한다() throws Exception {
+            // given
+            UserRequest.Create request = new UserRequest.Create("username", "email", "password", "nickname");
+            UserResponse createdUser = new UserResponse(1L, "nickname", "username", "email");
 
-        when(userService.create(any(UserRequest.Create.class))).thenReturn(createdUser);
-        // when & then
-        mockMvc.perform(post("/api/v1/users")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.id").value(1L))
-                .andExpect(jsonPath("$.data.nickName").value("nickname"))
-                .andExpect(jsonPath("$.data.name").value("username"))
-                .andExpect(jsonPath("$.data.email").value("email"));
+            when(userService.create(any(UserRequest.Create.class))).thenReturn(createdUser);
+            // when & then
+            mockMvc.perform(post("/api/v1/users")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.data.id").value(1L))
+                    .andExpect(jsonPath("$.data.nickName").value("nickname"))
+                    .andExpect(jsonPath("$.data.name").value("username"))
+                    .andExpect(jsonPath("$.data.email").value("email"));
+        }
     }
+
 
     @Nested
     class 조회 {

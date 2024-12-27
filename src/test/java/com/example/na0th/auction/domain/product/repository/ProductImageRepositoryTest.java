@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -44,7 +45,7 @@ class ProductImageRepositoryTest {
         ProductImage productImage4 = ProductImage.create("imageUrl4", product2);
         productImageRepository.saveAll(List.of(productImage1, productImage2, productImage3, productImage4));
 
-        List<Long> productIds = List.of(1L, 2L);
+        List<Long> productIds = List.of(product1.getId(), product2.getId());
 
         // when
         List<ProductImage> productImageList = productImageRepository.findAllByProductIds(productIds);
