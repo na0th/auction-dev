@@ -1,8 +1,10 @@
 package com.example.na0th.auction.domain.auction.service;
 
 import com.example.na0th.auction.common.jobRunr.AuctionJob;
+import com.example.na0th.auction.domain.auction.event.AuctionStartedEvent;
 import lombok.RequiredArgsConstructor;
 import org.jobrunr.scheduling.JobScheduler;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -16,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class AuctionSchedulerService {
     private final JobScheduler jobScheduler;
+    private final ApplicationEventPublisher eventPublisher;
     private final AuctionJob auctionJob;
 
     // 작업 ID 관리 (수정/삭제 지원)
