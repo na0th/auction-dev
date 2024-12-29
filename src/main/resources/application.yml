@@ -14,9 +14,9 @@ spring:
       path: /h2-console
   datasource:
     url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
     username: sa
     password: sa
-    driver-class-name: org.h2.Driver
   jpa:
     hibernate:
       ddl-auto: create-drop
@@ -35,7 +35,19 @@ logging:
   level:
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
 server:
   port: 8080
 
+org :
+  jobrunr:
+    job-scheduler:
+      enabled: true  # 작업 스케줄러 활성화
+    background-job-server:
+      enabled: true  # 백그라운드 서버 활성화
+    dashboard:
+      enabled: true  # 대시보드 활성화
+      port: 8000     # 대시보드 포트 (http://localhost:8000)
+    database:
+      table-prefix: JOBRUNR_  # JobRunr 테이블 접두사
 

@@ -36,8 +36,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AuctionServiceImplTest {
@@ -51,6 +50,8 @@ class AuctionServiceImplTest {
     private ProductRepository productRepository;
     @Mock
     private ProductImageRepository productImageRepository;
+    @Mock
+    private AuctionSchedulerService auctionSchedulerService;
 
     private User user;
     private Product product;
@@ -97,6 +98,7 @@ class AuctionServiceImplTest {
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
         when(auctionRepository.save(any(Auction.class))).thenReturn(auction);
+
         // when
         AuctionResponse createdAuction = auctionService.create(userId, request);
         // then
@@ -104,6 +106,8 @@ class AuctionServiceImplTest {
         assertThat(createdAuction.getAuctionCategory()).isEqualTo(AuctionCategory.PUBLIC_BID.toString());
         assertThat(createdAuction.getAuctionStatus()).isEqualTo(AuctionStatus.ACTIVE.toString());
 
+        verify(auctionSchedulerService, times(1)).scheduleStart(anyLong(), any(LocalDateTime.class));
+        verify(auctionSchedulerService, times(1)).scheduleEnd(anyLong(), any(LocalDateTime.class));
     }
 
     @Test

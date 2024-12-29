@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,7 @@ public class AuctionServiceImpl implements AuctionService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final ProductImageRepository productImageRepository;
+    private final AuctionSchedulerService schedulerService;
 
     @Override
     public AuctionResponse create(Long userId, AuctionRequest.Create request) {
@@ -53,7 +55,11 @@ public class AuctionServiceImpl implements AuctionService {
                 request.getAuctionStatus()
         );
 
-        auctionRepository.save(newAuction);
+        Auction savedAuction = auctionRepository.save(newAuction);
+
+        // 시작 및 종료 시간 스케줄 등록
+        schedulerService.scheduleStart(savedAuction.getId(), savedAuction.getAuctionTime().getStartTime());
+        schedulerService.scheduleEnd(savedAuction.getId(), savedAuction.getAuctionTime().getEndTime());
 
         return AuctionResponse.of(newAuction);
 
@@ -105,9 +111,9 @@ public class AuctionServiceImpl implements AuctionService {
     public Page<AuctionResponse.Details> getAuctionsByFilter(Pageable pageable, AuctionRequest.SearchCondition condition) {
         /**
          TODO : ProductImage -> Product만 참조 가능한 단방향 매핑임.
-          따라서 Product를 조회해도 ProductImage를 참조할 수 없기 때문에
-          쿼리를 따로 날려 ProductImage만 조회해 온 후 DTO에 추가해야 함.
-          1. Auction 조회 / 2. ProductImage 조회/ 3. DTO에 Auction, ProductImage 채우기
+         따라서 Product를 조회해도 ProductImage를 참조할 수 없기 때문에
+         쿼리를 따로 날려 ProductImage만 조회해 온 후 DTO에 추가해야 함.
+         1. Auction 조회 / 2. ProductImage 조회/ 3. DTO에 Auction, ProductImage 채우기
          */
 
         // 1. Fetch Join으로 연관 엔티티까지 프록시 초기화 시켜서 조회

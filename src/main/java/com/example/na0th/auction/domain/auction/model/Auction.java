@@ -3,7 +3,7 @@ package com.example.na0th.auction.domain.auction.model;
 import com.example.na0th.auction.common.entity.BaseEntity;
 import com.example.na0th.auction.domain.auction.exception.AuctionCanNotUpdateException;
 import com.example.na0th.auction.domain.auction.exception.AuctionEndedException;
-import com.example.na0th.auction.domain.auction.exception.InvalidAuctionTimeException;
+import com.example.na0th.auction.domain.auction.exception.InvalidAuctionStateException;
 import com.example.na0th.auction.domain.bid.exception.InvalidBidAmountException;
 import com.example.na0th.auction.domain.bid.exception.NotHighestBidException;
 import com.example.na0th.auction.domain.bid.model.Bid;
@@ -52,7 +52,7 @@ public class Auction extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User seller;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     private Product product;
 
     @OneToMany(mappedBy = "auction", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
@@ -86,9 +86,7 @@ public class Auction extends BaseEntity {
     }
 
     public void update(LocalDateTime startTime, LocalDateTime endTime, String auctionCategory, String auctionStatus, BigDecimal startingBid) {
-        if (!validateCanUpdate()) {
-            throw new AuctionCanNotUpdateException("Auction Can Not Update : status is not PENDING");
-        }
+        validateCanUpdate();
         this.auctionTime = AuctionTime.of(startTime, endTime);
         this.auctionCategory = AuctionCategory.fromDisplayName(auctionCategory);
         this.auctionStatus = AuctionStatus.fromDisplayName(auctionStatus);
@@ -115,6 +113,34 @@ public class Auction extends BaseEntity {
         }
     }
 
+    public void activate() {
+        validateCanActivate();
+        this.auctionStatus = AuctionStatus.ACTIVE;
+    }
+
+    public void close() {
+        validateCanClose();
+        this.auctionStatus = AuctionStatus.CLOSED;
+    }
+
+    private void validateCanClose() {
+        if (!auctionStatus.equals(AuctionStatus.ACTIVE)) {
+            throw new InvalidAuctionStateException("Auction state change error: Can only close an auction from ACTIVE state.");
+        }
+    }
+
+    private void validateCanActivate() {
+        if (!auctionStatus.equals(AuctionStatus.PENDING)) {
+            throw new InvalidAuctionStateException("Auction state change error: Can only start an auction from PENDING state.");
+        }
+    }
+
+    private void validateCanUpdate() {
+        if (!auctionStatus.equals(AuctionStatus.PENDING)) {
+            throw new AuctionCanNotUpdateException("Auction Can Not Update : status is not PENDING");
+        }
+    }
+
     private boolean isAuctionActive() {
         return auctionStatus.equals(AuctionStatus.ACTIVE);
     }
@@ -125,9 +151,5 @@ public class Auction extends BaseEntity {
 
     private boolean isBidHigherThanStartingBid(Bid bid) {
         return startingBid.compareTo(bid.getBidAmount()) < 0;
-    }
-
-    private boolean validateCanUpdate() {
-        return auctionStatus.equals(AuctionStatus.PENDING);
     }
 }

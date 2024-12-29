@@ -36,7 +36,8 @@ dependencies {
     implementation 'org.springframework:spring-aspects'
 
     //쿼리 파라미터 로그 라이브러리
-    //implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0'
+//    implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0'
+
 
     //Querydsl 추가
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
@@ -51,6 +52,8 @@ dependencies {
     implementation 'org.webjars:stomp-websocket:2.3.4'
     // SockJS
     implementation 'org.webjars:sockjs-client:1.5.1'
+    //Job Runr
+    implementation 'org.jobrunr:jobrunr-spring-boot-3-starter:7.3.2'
 }
 
 tasks.named('test') {
