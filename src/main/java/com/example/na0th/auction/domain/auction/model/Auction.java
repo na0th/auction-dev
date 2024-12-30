@@ -42,6 +42,9 @@ public class Auction extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private AuctionStatus auctionStatus;
 
+    @Column(nullable = false)
+    private BigDecimal reservePrice;
+
     @Column(nullable = true)
     private BigDecimal startingBid;
 
@@ -59,7 +62,7 @@ public class Auction extends BaseEntity {
     private List<Bid> bids = new ArrayList<>();
 
 
-    public static Auction create(User seller, Product product, LocalDateTime startTime, LocalDateTime endTime, BigDecimal startingBid, String auctionCategory, String auctionStatus) {
+    public static Auction create(User seller, Product product, LocalDateTime startTime, LocalDateTime endTime, BigDecimal startingBid, String auctionCategory, String auctionStatus, BigDecimal reservePrice) {
         AuctionTime auctionTime = AuctionTime.of(startTime, endTime);
 
         Auction newAuction = Auction.builder()
@@ -69,6 +72,7 @@ public class Auction extends BaseEntity {
                 .auctionCategory(AuctionCategory.fromDisplayName(auctionCategory))
                 .auctionStatus(AuctionStatus.fromDisplayName(auctionStatus))
                 .startingBid(startingBid)
+                .reservePrice(reservePrice)
                 .build();
 
         newAuction.addUser(seller);
@@ -123,6 +127,12 @@ public class Auction extends BaseEntity {
         this.auctionStatus = AuctionStatus.CLOSED;
     }
 
+    public void cancel() {
+        //경매 끝났을 때, ACTIVE 상태인지 확인하고 유찰이면 유찰(CANCEL)로 변경
+        validateCanClose();
+        this.auctionStatus = AuctionStatus.CANCELED;
+    }
+
     private void validateCanClose() {
         if (!auctionStatus.equals(AuctionStatus.ACTIVE)) {
             throw new InvalidAuctionStateException("Auction state change error: Can only close an auction from ACTIVE state.");
@@ -152,4 +162,5 @@ public class Auction extends BaseEntity {
     private boolean isBidHigherThanStartingBid(Bid bid) {
         return startingBid.compareTo(bid.getBidAmount()) < 0;
     }
+    public boolean isCanceled() {return highestBidAmount.compareTo(reservePrice) < 0;}
 }

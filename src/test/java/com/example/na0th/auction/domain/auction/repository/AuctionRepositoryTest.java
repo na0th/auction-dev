@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,10 +54,12 @@ class AuctionRepositoryTest {
         Auction auction1 = Auction.builder()
                 .auctionCategory(AuctionCategory.PUBLIC_BID)
                 .product(product1)
+                .reservePrice(BigDecimal.ZERO)
                 .build();
         Auction auction2 = Auction.builder()
                 .auctionCategory(AuctionCategory.PUBLIC_FREE)
                 .product(product2)
+                .reservePrice(BigDecimal.ZERO)
                 .build();
         auctionRepository.saveAll(List.of(auction1, auction2));
 

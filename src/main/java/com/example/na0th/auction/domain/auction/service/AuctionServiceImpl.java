@@ -52,7 +52,8 @@ public class AuctionServiceImpl implements AuctionService {
                 request.getEndTime(),
                 request.getStartingBid(),
                 request.getAuctionCategory(),
-                request.getAuctionStatus()
+                request.getAuctionStatus(),
+                request.getReservePrice()
         );
 
         Auction savedAuction = auctionRepository.save(newAuction);

@@ -23,6 +23,7 @@ public class AuctionRequest {
         private String auctionCategory;
         private String auctionStatus;
         private BigDecimal startingBid;
+        private BigDecimal reservePrice;
     }
 
     @Getter

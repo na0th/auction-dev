@@ -94,7 +94,7 @@ class AuctionServiceImplTest {
         Long userId = 1L;
         Long productId = 1L;
 
-        AuctionRequest.Create request = new AuctionRequest.Create(1L, LocalDateTime.now(), LocalDateTime.now().plusDays(1), "PUBLIC_BID", "ACTIVE", BigDecimal.ZERO);
+        AuctionRequest.Create request = new AuctionRequest.Create(1L, LocalDateTime.now(), LocalDateTime.now().plusDays(1), "PUBLIC_BID", "ACTIVE", BigDecimal.ZERO, BigDecimal.ZERO);
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
         when(auctionRepository.save(any(Auction.class))).thenReturn(auction);

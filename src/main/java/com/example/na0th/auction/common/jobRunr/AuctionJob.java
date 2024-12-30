@@ -25,7 +25,16 @@ public class AuctionJob {
     @Transactional
     public void endAuction(Long auctionId) {
         Auction auction = auctionRepository.findById(auctionId).orElseThrow(() -> new AuctionNotFoundException("Not Found Auction ID: " + auctionId));
-        auction.close();
+        if (auction.isCanceled()) {
+            auction.cancel();
+        } else {
+            auction.close();
+        }
+        /**
+         * 만약, 최고 입찰가가 지정가보다 낮다면 유찰된다.
+         * 유찰 -> CANCELD
+         * 낙찰 -> CLOSED
+         */
         System.out.println("경매 종료 - ID: " + auctionId);
     }
 }
