@@ -3,6 +3,7 @@ package com.example.na0th.auction.api.product;
 import com.example.na0th.auction.common.config.JpaAuditingConfig;
 import com.example.na0th.auction.common.config.SecurityConfig;
 import com.example.na0th.auction.common.constant.ApiResponseMessages;
+import com.example.na0th.auction.config.TestAuthConfig;
 import com.example.na0th.auction.domain.product.dto.request.ProductRequest;
 import com.example.na0th.auction.domain.product.dto.response.ProductResponse;
 import com.example.na0th.auction.domain.product.exception.ProductNotFoundException;
@@ -36,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = ProductController.class, excludeAutoConfiguration = JpaAuditingConfig.class)
-@Import(SecurityConfig.class)
+@Import({TestAuthConfig.class})
 class ProductControllerTest {
     @Autowired
     private MockMvc mockMvc;

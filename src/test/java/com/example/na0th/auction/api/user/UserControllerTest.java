@@ -3,6 +3,7 @@ package com.example.na0th.auction.api.user;
 import com.example.na0th.auction.common.config.JpaAuditingConfig;
 import com.example.na0th.auction.common.config.SecurityConfig;
 import com.example.na0th.auction.common.constant.ApiResponseMessages;
+import com.example.na0th.auction.config.TestAuthConfig;
 import com.example.na0th.auction.domain.user.dto.request.UserRequest;
 import com.example.na0th.auction.domain.user.dto.response.UserResponse;
 import com.example.na0th.auction.domain.user.exception.UserNotFoundException;
@@ -33,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = UserController.class, excludeAutoConfiguration = JpaAuditingConfig.class)
-@Import(SecurityConfig.class)
+@Import({TestAuthConfig.class})
 class UserControllerTest {
 
     @Autowired

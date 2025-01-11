@@ -2,6 +2,7 @@ package com.example.na0th.auction.api.auction;
 
 import com.example.na0th.auction.common.config.JpaAuditingConfig;
 import com.example.na0th.auction.common.config.SecurityConfig;
+import com.example.na0th.auction.config.TestAuthConfig;
 import com.example.na0th.auction.domain.auction.dto.request.AuctionRequest;
 import com.example.na0th.auction.domain.auction.dto.response.AuctionResponse;
 import com.example.na0th.auction.domain.auction.model.Auction;
@@ -37,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = AuctionController.class, excludeAutoConfiguration = JpaAuditingConfig.class)
-@Import(SecurityConfig.class)
+@Import({TestAuthConfig.class})
 class AuctionControllerTest {
     @Autowired
     private MockMvc mockMvc;
