@@ -1,8 +1,8 @@
 package com.example.na0th.auction.domain.auth.service;
 
-import com.example.na0th.auction.domain.auth.exception.RefreshTokenNotFoundException;
 import com.example.na0th.auction.domain.auth.model.RefreshToken;
 import com.example.na0th.auction.domain.auth.repository.RefreshTokenRepository;
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +19,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public RefreshToken getRefreshToken(String refreshToken) {
-        return refreshTokenRepository.findById(refreshToken).orElseThrow(() -> new RefreshTokenNotFoundException("Refresh Token not found with id " + refreshToken));
+        return refreshTokenRepository.findById(refreshToken).orElseThrow(() -> new JwtException("Refresh Token not found with id " + refreshToken));
     }
 
 }

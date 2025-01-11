@@ -4,10 +4,10 @@ import com.example.na0th.auction.common.response.ApiResult;
 import com.example.na0th.auction.common.util.CookieUtil;
 import com.example.na0th.auction.common.util.JwtTokenProvider;
 import com.example.na0th.auction.domain.auth.dto.request.AuthRequest;
-import com.example.na0th.auction.domain.auth.exception.RefreshTokenNotFoundException;
 import com.example.na0th.auction.domain.auth.model.RefreshToken;
 import com.example.na0th.auction.domain.auth.service.AuthService;
 import com.example.na0th.auction.domain.user.model.MyUserDetails;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -63,7 +63,7 @@ public class AuthController {
         String refreshTokenValue = CookieUtil.getCookieValue(request, "refresh-token");
 
         if (refreshTokenValue == null) {
-            throw new RefreshTokenNotFoundException("Refresh token not found in cookie.");
+            throw new JwtException("Invalid Refresh Token : Refresh token not found in cookie.");
         }
         //Refresh Token 검증 후, 적절하지 않다면 예외처리
         tokenProvider.validateRefreshToken(refreshTokenValue);

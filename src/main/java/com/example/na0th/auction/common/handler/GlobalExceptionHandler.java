@@ -9,6 +9,7 @@ import com.example.na0th.auction.domain.auction.exception.InvalidAuctionTimeExce
 import com.example.na0th.auction.domain.bid.exception.NotHighestBidException;
 import com.example.na0th.auction.domain.product.exception.ProductNotFoundException;
 import com.example.na0th.auction.domain.user.exception.UserNotFoundException;
+import io.jsonwebtoken.JwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -52,6 +53,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ProductNotFoundException.class)
     public ResponseEntity<ApiResult<String>> handleProductNotFoundException(ProductNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(failure(PRODUCT_NOT_FOUND));
+    }
+
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<ApiResult<String>> handleJwtException(JwtException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(failure(e.getMessage()));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
