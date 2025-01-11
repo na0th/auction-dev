@@ -1,5 +1,6 @@
 package com.example.na0th.auction.common.config;
 
+import com.example.na0th.auction.domain.auth.filter.AccessTokenFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,12 +12,13 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-
+    private final AccessTokenFilter accessTokenFilter;
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -35,7 +37,8 @@ public class SecurityConfig {
                                 "/api/auth/reissue") // 컨트롤러에서 따로 처리 할 예정(필터를 또 만들면 비효율적)
                         .permitAll()
                         .anyRequest().authenticated())
-                .httpBasic(basic -> basic.disable()); // HTTP Basic 비활성화
+                .httpBasic(basic -> basic.disable())// HTTP Basic 비활성화
+                .addFilterBefore(accessTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
