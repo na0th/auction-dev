@@ -1,6 +1,7 @@
 package com.example.na0th.auction.api.auction;
 
 import com.example.na0th.auction.common.config.JpaAuditingConfig;
+import com.example.na0th.auction.common.config.SecurityConfig;
 import com.example.na0th.auction.domain.auction.dto.request.AuctionRequest;
 import com.example.na0th.auction.domain.auction.dto.response.AuctionResponse;
 import com.example.na0th.auction.domain.auction.model.Auction;
@@ -12,14 +13,21 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Collections;
+import java.util.List;
 
 import static com.example.na0th.auction.common.constant.ApiResponseMessages.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -29,6 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = AuctionController.class, excludeAutoConfiguration = JpaAuditingConfig.class)
+@Import(SecurityConfig.class)
 class AuctionControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -41,7 +50,11 @@ class AuctionControllerTest {
 
     @BeforeEach
     void setUp() {
-
+        //인증 인가 생략을 위한 인증 객체 생성
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken("testUser", null,
+                        //권한 부여 없음
+                        List.of()));
     }
 
     @Test
@@ -97,9 +110,9 @@ class AuctionControllerTest {
         // given
         AuctionRequest.Update request = new AuctionRequest.Update();
         AuctionResponse updatedAuction = new AuctionResponse();
-        when(auctionService.update(any(Long.class),any(AuctionRequest.Update.class))).thenReturn(updatedAuction);
+        when(auctionService.update(any(Long.class), any(AuctionRequest.Update.class))).thenReturn(updatedAuction);
         // when & then
-        mockMvc.perform(put("/api/v1/auctions/{id}",1L)
+        mockMvc.perform(put("/api/v1/auctions/{id}", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())

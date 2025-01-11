@@ -12,13 +12,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 
@@ -26,6 +26,8 @@ import static org.mockito.Mockito.*;
 class UserServiceImplTest {
     @Mock
     UserRepository userRepository;
+    @Mock
+    PasswordEncoder passwordEncoder;
     @InjectMocks
     UserServiceImpl userService;
 
@@ -56,6 +58,7 @@ class UserServiceImplTest {
         assertThat(createdUser.getEmail()).isEqualTo(user.getEmail());
         assertThat(createdUser.getNickName()).isEqualTo(user.getNickName());
 
+        verify(passwordEncoder,times(1)).encode("password");
     }
 
     @Nested

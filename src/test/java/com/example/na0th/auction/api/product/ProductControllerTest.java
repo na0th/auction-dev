@@ -1,6 +1,7 @@
 package com.example.na0th.auction.api.product;
 
 import com.example.na0th.auction.common.config.JpaAuditingConfig;
+import com.example.na0th.auction.common.config.SecurityConfig;
 import com.example.na0th.auction.common.constant.ApiResponseMessages;
 import com.example.na0th.auction.domain.product.dto.request.ProductRequest;
 import com.example.na0th.auction.domain.product.dto.response.ProductResponse;
@@ -16,8 +17,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,6 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = ProductController.class, excludeAutoConfiguration = JpaAuditingConfig.class)
+@Import(SecurityConfig.class)
 class ProductControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -47,6 +52,11 @@ class ProductControllerTest {
 
     @BeforeEach
     void setUp() {
+        //인증 인가 생략을 위한 인증 객체 생성
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken("testUser", null,
+                        //권한 부여 없음
+                        List.of()));
         image = new MockMultipartFile("images", "image.jpg", "image/jpeg", "image/png".getBytes());
         request = new MockMultipartFile("productRequest", "request.json", "application/json", "{\"productId\":1}".getBytes());
     }

@@ -1,6 +1,7 @@
 package com.example.na0th.auction.api.user;
 
 import com.example.na0th.auction.common.config.JpaAuditingConfig;
+import com.example.na0th.auction.common.config.SecurityConfig;
 import com.example.na0th.auction.common.constant.ApiResponseMessages;
 import com.example.na0th.auction.domain.user.dto.request.UserRequest;
 import com.example.na0th.auction.domain.user.dto.response.UserResponse;
@@ -15,9 +16,14 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -27,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = UserController.class, excludeAutoConfiguration = JpaAuditingConfig.class)
+@Import(SecurityConfig.class)
 class UserControllerTest {
 
     @Autowired
@@ -40,7 +47,11 @@ class UserControllerTest {
 
     @BeforeEach
     void setUp() {
-
+        //인증 인가 생략을 위한 인증 객체 생성
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken("testUser", null,
+                        //권한 부여 없음
+                        List.of()));
     }
 
     @Nested
