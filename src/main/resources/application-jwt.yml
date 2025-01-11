@@ -1,0 +1,3 @@
+jwt:
+  accessTokenExpiration: 300000 # 60 * 5 * 1000, 5분 (밀리초)
+  refreshTokenExpiration: 1209600000 # 60 * 60 * 24 * 14 * 1000, 14일 (밀리초)

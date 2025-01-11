@@ -2,23 +2,29 @@ package com.example.na0th.auction.domain.user.service;
 
 import com.example.na0th.auction.domain.user.dto.request.UserRequest;
 import com.example.na0th.auction.domain.user.dto.response.UserResponse;
+import com.example.na0th.auction.domain.user.exception.UserAlreadyExistsException;
 import com.example.na0th.auction.domain.user.exception.UserNotFoundException;
 import com.example.na0th.auction.domain.user.model.User;
 import com.example.na0th.auction.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserResponse create(UserRequest.Create create) {
+        if (userRepository.findByEmail(create.getEmail()).isPresent()) {
+            throw new UserAlreadyExistsException("Can Not Create User, already exists user email :" + create.getEmail());
+        }
         User user = User.create(
                 create.getUsername(),
                 create.getEmail(),
-                create.getPassword(),
+                passwordEncoder.encode(create.getPassword()),
                 create.getNickname()
         );
         User newUser = userRepository.save(user);
@@ -29,7 +35,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse getById(Long userId) {
         User foundUser = userRepository.findById(userId)
-                .orElseThrow( () -> new UserNotFoundException("User not found with id " + userId));
+                .orElseThrow(() -> new UserNotFoundException("User not found with id " + userId));
 
         return UserResponse.from(foundUser);
     }
@@ -37,7 +43,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse update(Long userId, UserRequest.Update request) {
         User foundUser = userRepository.findById(userId)
-                .orElseThrow( () -> new UserNotFoundException("User not found with id " + userId));
+                .orElseThrow(() -> new UserNotFoundException("User not found with id " + userId));
 
         foundUser.update(
                 request.getName(),
@@ -50,7 +56,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delete(Long userId) {
         User foundUser = userRepository.findById(userId)
-                .orElseThrow( () -> new UserNotFoundException("User not found with id " + userId));
+                .orElseThrow(() -> new UserNotFoundException("User not found with id " + userId));
 
         userRepository.deleteById(userId);
     }

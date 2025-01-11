@@ -30,6 +30,9 @@ spring:
     #        default_batch_fetch_size: 100
 
     database-platform: org.hibernate.dialect.H2Dialect
+  profiles:
+    include:
+      - jwt
 
 logging:
   level:
