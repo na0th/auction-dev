@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bid Viewer</title>
+    <script src="/webjars/sockjs-client/1.5.1/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/2.3.4/stomp.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        #bids {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .bid {
+            background-color: #f9f9f9;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        #highestBid {
+            margin-top: 20px;
+            padding: 10px;
+            border: 2px solid green;
+            border-radius: 5px;
+            background-color: #e6ffe6;
+        }
+        #bidForm {
+            margin-top: 20px;
+        }
+        #bidForm input {
+            margin-right: 10px;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Live Bid Viewer</h1>
+
+    <div id="highestBid">
+        <h2>Highest Bid</h2>
+        <p>No highest bid yet...</p>
+    </div>
+
+    <div id="bids">
+        <p>No bids yet...</p>
+    </div>
+
+    <div id="bidForm">
+        <!-- Form for submitting a bid -->
+<!--        <input type="number" id="auctionId" placeholder="Auction ID" required>-->
+<!--        <input type="number" id="auctionId" placeholder="Auction ID" required>-->
+<!--        <button id="connectBtn">Connect to Auction</button>-->
+        <input type="number" id="userId" placeholder="userId" required>
+        <input type="text" id="bidderNickName" placeholder="Your Nickname" required>
+        <input type="number" id="amount" placeholder="Bid Amount" step="0.01" required>
+
+        <button onclick="sendBid()">Place Bid</button>
+    </div>
+
+    <script>
+        // document.getElementById('connectBtn').addEventListener('click', function () {
+        //     const auctionId = document.getElementById('auctionId').value;
+        //     if (!auctionId) {
+        //         alert('Please enter a valid auction ID.');
+        //         return;
+        //     }
+        //
+        //     connect(auctionId);
+        // });
+        const path = window.location.pathname;
+        const auctionId = path.split("/").pop();
+        let stompClient = null; // STOMP client instance
+
+        // Function to establish WebSocket connection
+        function connect(auctionId) {
+            const socket = new SockJS('/ws'); // Create a SockJS instance pointing to the server endpoint
+            stompClient = Stomp.over(socket); // Wrap the SockJS instance with STOMP
+
+            stompClient.connect({}, function (frame) {
+                console.log('Connected: ' + frame); // Log successful connection
+
+                // Subscribe to the /topic/bids channel to receive highest bids
+                stompClient.subscribe(`/topic/auctions/${auctionId}`, function (message) {
+                    const bidData = JSON.parse(message.body); // Parse the received JSON message
+                    updateHighestBid(bidData); // Update the highest bid in the UI
+                });
+            }, function (error) {
+                console.error('STOMP error: ' + error); // Log any connection errors
+            });
+        }
+
+        // Function to update the highest bid in the UI
+        function updateHighestBid(bidData) {
+            const highestBidDiv = document.getElementById('highestBid'); // Highest bid container
+
+            highestBidDiv.innerHTML = `
+                <h2>Highest Bid</h2>
+                <p>
+                    <strong>Auction ID:</strong> ${bidData.auctionId}<br>
+                    <strong>Bidder Nickname:</strong> ${bidData.bidderNickName}<br>
+                    <strong>Amount:</strong> $${bidData.bidAmount}
+                </p>
+            `;
+        }
+
+        // Function to send a bid to the server
+        function sendBid() {
+            // const auctionId = document.getElementById('auctionId').value;
+            const userId = document.getElementById('userId').value;
+            const bidderNickName = document.getElementById('bidderNickName').value; // Get bidder nickname from input
+            const bidAmount = document.getElementById('amount').value; // Get bid amount from input
+
+            // Validate inputs
+            if (!auctionId ||!bidderNickName || !bidAmount) {
+                alert('Please enter both your nickname and a bid amount.');
+                return; // Exit if validation fails
+            }
+
+            // Construct the bid object
+            const bidData = {
+                auctionId: auctionId,
+                userId : userId,
+                bidderNickName: bidderNickName, // Bidder's nickname
+                bidAmount: parseFloat(bidAmount).toFixed(2), // Bid amount as a fixed decimal number
+                time: new Date().toISOString() // Current time in ISO format
+            };
+
+            // Send the bid to the /app/bid endpoint on the server
+            stompClient.send(`/app/bid/${auctionId}`, {}, JSON.stringify(bidData));
+
+            // Clear input fields after sending the bid
+            // document.getElementById('auctionId').value = '';
+            document.getElementById('bidderNickName').value = '';
+            document.getElementById('amount').value = '';
+        }
+
+        // Establish WebSocket connection when the page loads
+        connect(auctionId);
+
+    </script>
+</body>
+</html>
