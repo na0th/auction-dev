@@ -1,9 +1,6 @@
 package com.example.na0th.auction.domain.product.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,6 +17,7 @@ public class Product {
     private Long id;
     private String name;
     private String description;
+    @Enumerated(EnumType.STRING)
     private ProductCategory productCategory;
 
 //    private Auction auction;

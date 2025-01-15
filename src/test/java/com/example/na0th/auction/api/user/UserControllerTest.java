@@ -4,6 +4,7 @@ import com.example.na0th.auction.common.config.JpaAuditingConfig;
 import com.example.na0th.auction.common.config.SecurityConfig;
 import com.example.na0th.auction.common.constant.ApiResponseMessages;
 import com.example.na0th.auction.config.TestAuthConfig;
+import com.example.na0th.auction.domain.auction.service.AuctionService;
 import com.example.na0th.auction.domain.user.dto.request.UserRequest;
 import com.example.na0th.auction.domain.user.dto.response.UserResponse;
 import com.example.na0th.auction.domain.user.exception.UserNotFoundException;
@@ -45,6 +46,9 @@ class UserControllerTest {
 
     @MockitoBean
     private UserService userService;
+
+    @MockitoBean
+    private AuctionService auctionService;
 
     @BeforeEach
     void setUp() {

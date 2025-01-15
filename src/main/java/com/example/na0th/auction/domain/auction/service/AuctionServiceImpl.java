@@ -2,6 +2,7 @@ package com.example.na0th.auction.domain.auction.service;
 
 import com.example.na0th.auction.domain.auction.dto.request.AuctionRequest;
 import com.example.na0th.auction.domain.auction.dto.response.AuctionResponse;
+import com.example.na0th.auction.domain.auction.dto.response.AuctionResponseWon;
 import com.example.na0th.auction.domain.auction.exception.AuctionNotFoundException;
 import com.example.na0th.auction.domain.auction.model.Auction;
 import com.example.na0th.auction.domain.auction.model.AuctionCategory;
@@ -139,4 +140,85 @@ public class AuctionServiceImpl implements AuctionService {
                         AuctionResponse.Details.of(auction, productImageMap.getOrDefault(auction.getProduct().getId(), Collections.emptyList()))
         );
     }
+
+    //    @Override
+//    public Page<AuctionResponse.Won> findWonAuctionsByUserIdV1(Long userId, Pageable pageable) {
+//        // 1. Fetch Join으로 연관 엔티티까지 프록시 초기화 시켜서 조회(컬렉션은 제외)
+//        Page<Auction> wonAuctions = auctionRepository.findWonAuctionsByUserId(userId, pageable);
+//
+//        // 2. Product ID 전부 가져옴
+//        List<Long> productIds = wonAuctions.stream()
+//                .map(auction -> auction.getProduct().getId())
+//                .distinct()
+//                .toList();
+//        // 3. Product ID로 Product Image 를 batch 조회
+//        List<ProductImage> productImages = productImageRepository.findAllByProductIds(productIds);
+//
+//        // 4. ProductImage 들을 각각 Product ID로 그룹화
+//        Map<Long, List<String>> productImageMap = productImages.stream()
+//                .collect(Collectors.groupingBy(
+//                        productImage -> productImage.getProduct().getId(),
+//                        Collectors.mapping(ProductImage::getImageUrl, Collectors.toList())
+//                ));
+//        return wonAuctions.map(
+//                auction -> AuctionResponse.Won.of(auction, )
+//        )
+//                ;
+//    }
+    @Override
+    public Page<AuctionResponse.Won> findWonAuctionsByUserIdV2(Long userId, Pageable pageable) {
+        // 1. Fetch Join으로 연관 엔티티까지 프록시 초기화 시켜서 조회(컬렉션은 제외)
+        Page<AuctionResponse.Won> wonAuctions = auctionRepository.findWonAuctionsByUserIdV3(userId, pageable);
+
+        // 2. Product ID 전부 가져옴
+        List<Long> productIds = wonAuctions.stream()
+                .map(AuctionResponse.Won::getProductId)
+                .distinct()
+                .toList();
+        // 3. Product ID로 Product Image 를 batch 조회
+        List<ProductImage> productImages = productImageRepository.findAllByProductIds(productIds);
+
+        // 4. ProductImage 들을 각각 Product ID로 그룹화
+        Map<Long, List<String>> productImageMap = productImages.stream()
+                .collect(Collectors.groupingBy(
+                        productImage -> productImage.getProduct().getId(),
+                        Collectors.mapping(ProductImage::getImageUrl, Collectors.toList())
+                ));
+
+        return wonAuctions.map(
+                auction -> auction.addProductImageUrls(
+                        productImageMap.getOrDefault(auction.getProductId(), Collections.emptyList()))
+        );
+
+
+    }
+    @Override
+    public Page<AuctionResponseWon> findWonAuctionsByUserIdV3(Long userId, Pageable pageable) {
+        // 1. Fetch Join으로 연관 엔티티까지 프록시 초기화 시켜서 조회(컬렉션은 제외)
+        Page<AuctionResponseWon> wonAuctions = auctionRepository.findWonAuctionsByUserIdV5(userId, pageable);
+
+        // 2. Product ID 전부 가져옴
+        List<Long> productIds = wonAuctions.stream()
+                .map(AuctionResponseWon::getProductId)
+                .distinct()
+                .toList();
+        // 3. Product ID로 Product Image 를 batch 조회
+        List<ProductImage> productImages = productImageRepository.findAllByProductIds(productIds);
+
+        // 4. ProductImage 들을 각각 Product ID로 그룹화
+        Map<Long, List<String>> productImageMap = productImages.stream()
+                .collect(Collectors.groupingBy(
+                        productImage -> productImage.getProduct().getId(),
+                        Collectors.mapping(ProductImage::getImageUrl, Collectors.toList())
+                ));
+
+        return wonAuctions.map(
+                auction -> auction.addProductImageUrls(
+                        productImageMap.getOrDefault(auction.getProductId(), Collections.emptyList()))
+        );
+
+
+    }
+
+
 }

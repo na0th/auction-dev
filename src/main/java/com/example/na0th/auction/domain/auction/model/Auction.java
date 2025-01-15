@@ -52,10 +52,11 @@ public class Auction extends BaseEntity {
     private BigDecimal highestBidAmount;
     // Auction - user 다대일 -> 다 쪽에 외래키
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "seller_id")
     private User seller;
 
     @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id")
     private Product product;
 
     @OneToMany(mappedBy = "auction", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)

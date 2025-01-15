@@ -31,15 +31,10 @@ public class BidServiceImpl implements BidService {
     @Override
     public void processBid(BidRequest request) {
         //지갑 잔액을 확인 해야 함!
-        try {
-            Auction foundAuction = auctionRepository.findById(request.getAuctionId())
-                    .orElseThrow(() -> new AuctionNotFoundException("Auction not found" + request.getAuctionId()));
-            Bid newBid = Bid.create(request.getBidAmount(), request.getBidderNickName());
-            foundAuction.updateHighestBid(request.getUserId(), newBid);
-        } catch (OptimisticLockingFailureException e) {
-            System.err.println("OptimisticLockingFailureException occurred: " + e.getMessage());
-            throw e;
-        }
+        Auction foundAuction = auctionRepository.findById(request.getAuctionId())
+                .orElseThrow(() -> new AuctionNotFoundException("Auction not found" + request.getAuctionId()));
+        Bid newBid = Bid.create(request.getBidAmount(), request.getBidderNickName());
+        foundAuction.updateHighestBid(request.getUserId(), newBid);
         //변경감지 사용, 영속성 전이로 auction save 할 때, bid 도 save 된다
         //auctionRepository.save(foundAuction);
     }
