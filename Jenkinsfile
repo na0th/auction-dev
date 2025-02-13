@@ -3,7 +3,7 @@ pipeline {
 
     // Docker Hub 자격증명 및 이미지 정보 (Jenkins의 Credentials에 등록되어 있어야 합니다)
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('docker') // Jenkins에 등록된 Docker Hub 크리덴셜 ID
+        DOCKERHUB_CREDENTIALS = credentials('docker-hub') // Jenkins에 등록된 Docker Hub 크리덴셜 ID
         IMAGE_NAME = 'na0th/na0th'
         IMAGE_TAG = '1.0.0' // 필요에 따라 버전을 동적으로 지정할 수도 있음
     }
