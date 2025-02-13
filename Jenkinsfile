@@ -5,7 +5,7 @@ pipeline {
     environment {
         DOCKERHUB_CREDENTIALS = credentials('docker') // Jenkins에 등록된 Docker Hub 크리덴셜 ID
         IMAGE_NAME = 'na0th/na0th'
-        IMAGE_TAG = '1.0.0' // 필요에 따라 버전을 동적으로 지정할 수도 있음
+        IMAGE_TAG = '1.0.0' // 필요에 따라 버전을 동적으로 지정할 수도 있음.
     }
 
     stages {
@@ -40,7 +40,7 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    echo "Docker Hub에 로그인 중"
+                    echo "Docker Hub에 로그인 중.."
                     // 환경 변수 DOCKERHUB_CREDENTIALS_USR, DOCKERHUB_CREDENTIALS_PSW는 credentials()로부터 자동으로 설정됨
                     withCredentials([usernamePassword(credentialsId: 'docker', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                         sh "echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin"
