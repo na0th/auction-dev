@@ -14,7 +14,17 @@ pipeline {
                 checkout scm
             }
         }
+        stage('Build JAR with Gradle') {  // ✅ JAR 빌드 추가
+            steps {
+                script {
+                    echo "🛠️ Gradle을 사용하여 JAR 빌드"
+                    sh "./gradlew clean build -x test" // 테스트 제외하고 빌드
 
+                    echo "📂 빌드된 파일 확인:"
+                    sh "ls -al build/libs/"
+                }
+            }
+        }
         stage('Build Docker Image') {
             steps {
                 script {
