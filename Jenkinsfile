@@ -17,6 +17,9 @@ pipeline {
         stage('Build JAR with Gradle') {  // ✅ JAR 빌드 추가
             steps {
                 script {
+                    echo "🛠️ Gradle 실행 권한 부여"
+                    sh "chmod +x ./gradlew"  // ✅ 실행 권한 추가
+                    
                     echo "🛠️ Gradle을 사용하여 JAR 빌드"
                     sh "./gradlew clean build -x test" // 테스트 제외하고 빌드
 
