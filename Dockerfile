@@ -1,5 +1,5 @@
-# 21로 변경
-FROM openjdk:21
+
+FROM openjdk:17
 WORKDIR /app
 COPY build/libs/*.jar app.jar
 CMD ["java", "-jar", "app.jar"]
