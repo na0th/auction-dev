@@ -71,7 +71,7 @@ pipeline {
 
     post {
         success {
-            echo '🚀 배포 성공! happy'
+            echo '🚀 배포 성공! happy!!'
         }
         failure {
             echo '❌ 배포 실패! sad..'
