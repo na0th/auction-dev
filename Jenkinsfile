@@ -54,16 +54,16 @@ pipeline {
 
         stage('Deploy to EC2') {
             steps {
-                sshagent(['ec2-ssh']) {
-                    sh """
-                    echo "🚀 배포 스크립트 업로드 중..."
-                    scp -o StrictHostKeyChecking=no ./scripts/deploy.sh ubuntu@54.180.87.11:/home/ubuntu/deploy.sh
+                sshagent (credentials: ['ec2-ssh']) {
+                sh """
+                echo "🚀 배포 스크립트 업로드 중..."
+                scp -o StrictHostKeyChecking=no ./scripts/deploy.sh ubuntu@54.180.87.11:/home/ubuntu/deploy.sh
 
-                    ssh -tt ubuntu@54.180.87.11 -o StrictHostKeyChecking=no << 'EOF'
-                    chmod +x /home/ubuntu/deploy.sh
-                    /home/ubuntu/deploy.sh
-                    EOF
-                    """
+                ssh -tt ubuntu@54.180.87.11 -o StrictHostKeyChecking=no << 'EOF'
+                chmod +x /home/ubuntu/deploy.sh
+                /home/ubuntu/deploy.sh
+                EOF
+                """
                 }
             }
         }
