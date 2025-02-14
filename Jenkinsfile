@@ -58,11 +58,9 @@ pipeline {
                 sh """
                 echo "🚀 배포 스크립트 업로드 중..."
                 scp -o StrictHostKeyChecking=no ./scripts/deploy.sh ubuntu@54.180.87.11:/home/ubuntu/deploy.sh
-
-                ssh -tt ubuntu@54.180.87.11 -o StrictHostKeyChecking=no << 'EOF'
-                chmod +x /home/ubuntu/deploy.sh
-                /home/ubuntu/deploy.sh
-                EOF
+                
+                echo "🚀 EC2에서 배포 스크립트 실행..."
+                ssh -tt ubuntu@54.180.87.11 -o StrictHostKeyChecking=no "chmod +x /home/ubuntu/deploy.sh && /home/ubuntu/deploy.sh"
                 """
                 }
             }
