@@ -74,7 +74,7 @@ pipeline {
             echo '🚀 배포 성공! happy!!'
         }
         failure {
-            echo '❌ 배포 실패! sad..'
+            echo '❌ 배포 실패.. sad..'
         }
     }
 }
