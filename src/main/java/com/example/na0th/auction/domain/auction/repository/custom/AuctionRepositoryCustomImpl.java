@@ -35,12 +35,12 @@ public class AuctionRepositoryCustomImpl implements AuctionRepositoryCustom {
 
     @Override
     public Page<Auction> getAuctions(Pageable pageable, AuctionRequest.SearchCondition condition) {
-        List<Auction> content = searchAuctions(condition);
-        long totalCount = buildCountQuery(condition);
+        List<Auction> content = searchAuctions(pageable, condition);
+        int totalCount = buildCountQuery(condition);
         return new PageImpl<>(content, pageable, totalCount);
     }
 
-    private List<Auction> searchAuctions(AuctionRequest.SearchCondition condition) {
+    private List<Auction> searchAuctions(Pageable pageable, AuctionRequest.SearchCondition condition) {
         return queryFactory
                 .selectFrom(auction)
                 .leftJoin(auction.product, product)
@@ -57,11 +57,13 @@ public class AuctionRepositoryCustomImpl implements AuctionRepositoryCustom {
                         auctionStatusEq(condition.getAuctionStatus())
                 )
                 .orderBy(sortBy(condition.getSortBy()))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
 
     }
 
-    private long buildCountQuery(AuctionRequest.SearchCondition condition) {
+    private int buildCountQuery(AuctionRequest.SearchCondition condition) {
         return queryFactory
                 .selectFrom(auction)
                 .where(
@@ -73,9 +75,8 @@ public class AuctionRepositoryCustomImpl implements AuctionRepositoryCustom {
                         highestBidLoe(condition.getMaxPrice()),
                         auctionStatusEq(condition.getAuctionStatus())
                 )
-                .fetchCount();
+                .fetch().size();
     }
-
 
     private Predicate auctionCategoryEq(AuctionCategory auctionCategory) {
         return auctionCategory != null ? auction.auctionCategory.eq(auctionCategory) : null;

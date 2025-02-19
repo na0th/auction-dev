@@ -4,6 +4,9 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+# Spring Boot application configuration files
+src/main/resources/application-*.yml
+
 # 추가 #
 /resources/uploads/thumbnails/
 ### STS ###
