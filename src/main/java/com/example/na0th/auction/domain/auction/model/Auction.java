@@ -30,8 +30,8 @@ public class Auction extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Version //낙관적 락
-    private long version;
+//    @Version //낙관적 락
+//    private long version;
 
     @Embedded
     private AuctionTime auctionTime;

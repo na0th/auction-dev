@@ -20,6 +20,7 @@ public class Product {
     private Long id;
     private String name;
     private String description;
+    @Enumerated(EnumType.STRING)
     private ProductCategory productCategory;
 
 //    private Auction auction;
